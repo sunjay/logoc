@@ -2,6 +2,7 @@ extern crate logoc;
 
 use std::io::Write;
 use std::fs::{self, File};
+use std::process::{self, Command};
 use std::path::Path;
 
 use logoc::ast::{Program, Instruction, Expr};
@@ -40,4 +41,18 @@ fn main() {
     let output_cargo_cfg = build_dir.join("Cargo.toml");
     let output_cargo_cfg = File::create(output_cargo_cfg).unwrap();
     cargo::write_cargo_toml(output_cargo_cfg, output, &output_path);
+
+    // Run the generated Rust code
+    let status = Command::new("cargo")
+        .arg("build")
+        .current_dir(build_dir)
+        .status()
+        .expect("Failed to execute Rust compiler -- make sure you have Rust and Cargo installed.");
+
+    if !status.success() {
+        eprintln!("\nCargo failed to build the generated Rust code. \
+            This is an internal compiler error in logoc. \
+            Please report this error with some details of what led to it.");
+        process::exit(1);
+    }
 }
