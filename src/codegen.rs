@@ -12,6 +12,8 @@ pub fn generate_rust(program: Program) -> Result<Tokens, Error> {
         .collect::<Result<Vec<_>, _>>()?;
 
     Ok(quote! {
+        #![deny(warnings)]
+
         extern crate turtle;
 
         fn main() {
