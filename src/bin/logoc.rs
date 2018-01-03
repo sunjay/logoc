@@ -6,7 +6,7 @@ use std::process::{self, Command};
 use std::path::Path;
 
 use logoc::ast::{Program, Instruction, Expr};
-use logoc::codegen::generate_rust;
+use logoc::codegen;
 use logoc::cargo;
 
 fn main() {
@@ -29,7 +29,7 @@ fn main() {
         Instruction::Forward(Expr::Number(100.0)),
         Instruction::Right(Expr::Number(90.0)),
     ];
-    let code = generate_rust(ast).unwrap();
+    let code = codegen::to_tokens(ast).unwrap();
 
     fs::create_dir_all(build_dir)
         .expect("Failed to create directory for build output");

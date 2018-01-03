@@ -6,9 +6,9 @@ use ast::{Program, Instruction, Expr};
 pub enum Error {
 }
 
-pub fn generate_rust(program: Program) -> Result<Tokens, Error> {
+pub fn to_tokens(program: Program) -> Result<Tokens, Error> {
     let stmts = program.into_iter()
-        .map(generate_instr)
+        .map(instr)
         .collect::<Result<Vec<_>, _>>()?;
 
     Ok(quote! {
@@ -17,21 +17,29 @@ pub fn generate_rust(program: Program) -> Result<Tokens, Error> {
         extern crate turtle;
 
         fn main() {
-            let mut turtle = ::turtle::Turtle::new();
+            let mut _turtle = ::turtle::Turtle::new();
             #(#stmts)*
         }
     })
 }
 
-fn generate_instr(instr: Instruction) -> Result<Tokens, Error> {
+fn instr(instr: Instruction) -> Result<Tokens, Error> {
     use self::Instruction::*;
-    let (method, value): (Ident, _) = match instr {
-        Forward(Expr::Number(value)) => ("forward".into(), value),
-        Backward(Expr::Number(value)) => ("backward".into(), value),
-        Left(Expr::Number(value)) => ("left".into(), value),
-        Right(Expr::Number(value)) => ("right".into(), value),
+    match instr {
+        Forward(arg) => call_method("forward", arg),
+        Backward(arg) => call_method("backward", arg),
+        Left(arg) => call_method("left", arg),
+        Right(arg) => call_method("right", arg),
+    }
+}
+
+fn call_method(method: &str, expr: Expr) -> Result<Tokens, Error> {
+    let method = Ident::from(method);
+    let value = match expr {
+        Expr::Number(value) => quote! { #value },
     };
+
     Ok(quote! {
-        turtle.#method(#value);
+        _turtle.#method(#value);
     })
 }
