@@ -17,6 +17,8 @@ fn main() {
     let output = "square";
     // The path of the intermediate Rust file that will be generated
     let output_path = format!("{}.rs", output);
+    // Whether to format the generated code
+    let rustfmt = true;
 
     //TODO: Read from input file that is provided by command line args
     let ast: Program = vec![
@@ -41,6 +43,20 @@ fn main() {
     let output_cargo_cfg = build_dir.join("Cargo.toml");
     let output_cargo_cfg = File::create(output_cargo_cfg).unwrap();
     cargo::write_cargo_toml(output_cargo_cfg, output, &output_path);
+
+    if rustfmt {
+        let status = Command::new("rustfmt")
+            .arg(output_path)
+            .current_dir(build_dir)
+            .status()
+            .expect("Failed to execute rustfmt -- make sure you have rustfmt installed");
+        if !status.success() {
+            eprintln!("\nFailed to format generated Rust code. \
+                This is an internal compiler error in logoc. \
+                Please report this error with some details of what led to it.");
+            process::exit(1);
+        }
+    }
 
     // Run the generated Rust code
     let status = Command::new("cargo")
