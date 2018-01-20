@@ -2,6 +2,7 @@
 name = "logoc"
 version = "0.1.0"
 authors = ["Sunjay Varma <varma.sunjay@gmail.com>"]
+description = "Compiler for the LOGO programming language"
 
 [dependencies]
 serde = "1.0"
@@ -9,3 +10,5 @@ serde_derive = "1.0"
 toml = "0.4"
 maplit = "1.0"
 quote = "0.3"
+structopt = "0.1.0"
+structopt-derive = "0.1.0"
