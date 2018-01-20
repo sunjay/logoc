@@ -14,7 +14,7 @@ fn main() {
     // The directory to place all build artifacts in
     let build_dir = Path::new("build");
     // The filename (without extension) of the output executable
-    let output = "foo";
+    let output = "square";
     // The path of the intermediate Rust file that will be generated
     let output_path = format!("{}.rs", output);
 
